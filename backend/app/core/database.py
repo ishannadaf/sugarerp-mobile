@@ -1,12 +1,12 @@
 from sqlalchemy import create_engine
 from sqlalchemy.engine import make_url
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.core.config import settings
 
-# Force SQLAlchemy to use MySQL Connector/Python
 database_url = make_url(settings.DATABASE_URL)
 
+# Explicitly select MySQL Connector/Python
 if database_url.drivername.startswith("mysql"):
     database_url = database_url.set(
         drivername="mysql+mysqlconnector"
@@ -23,6 +23,9 @@ SessionLocal = sessionmaker(
     autoflush=False,
     bind=engine,
 )
+
+# Required by your SQLAlchemy models
+Base = declarative_base()
 
 
 def get_db():
