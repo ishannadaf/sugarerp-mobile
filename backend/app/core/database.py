@@ -1,18 +1,15 @@
 from sqlalchemy import create_engine
+from sqlalchemy.engine import make_url
 from sqlalchemy.orm import sessionmaker
 
 from app.core.config import settings
 
-database_url = settings.DATABASE_URL
+# Force SQLAlchemy to use MySQL Connector/Python
+database_url = make_url(settings.DATABASE_URL)
 
-# Ensure SQLAlchemy uses PyMySQL instead of MySQLdb
-if database_url.startswith("mysql://"):
-    database_url = database_url.replace(
-        "mysql://", "mysql+pymysql://", 1
-    )
-elif database_url.startswith("mysql+mysqldb://"):
-    database_url = database_url.replace(
-        "mysql+mysqldb://", "mysql+pymysql://", 1
+if database_url.drivername.startswith("mysql"):
+    database_url = database_url.set(
+        drivername="mysql+mysqlconnector"
     )
 
 engine = create_engine(
