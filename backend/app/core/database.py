@@ -4,8 +4,18 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from app.core.config import settings
 
 
+database_url = settings.DATABASE_URL
+
+# Use PyMySQL instead of the default MySQLdb driver.
+if database_url.startswith("mysql://"):
+    database_url = database_url.replace(
+        "mysql://",
+        "mysql+pymysql://",
+        1,
+    )
+
 engine = create_engine(
-    settings.DATABASE_URL,
+    database_url,
     pool_pre_ping=True,
     pool_recycle=3600,
 )
