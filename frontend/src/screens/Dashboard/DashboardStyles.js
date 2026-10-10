@@ -1,0 +1,355 @@
+import { Dimensions, Platform, StyleSheet } from 'react-native';
+import colors from '../../constants/colors';
+
+const { width } = Dimensions.get('window');
+const guidelineWidth = 390;
+const scale = (size) => Math.round((width / guidelineWidth) * size);
+const moderateScale = (size, factor = 0.35) =>
+  Math.round(size + (scale(size) - size) * factor);
+
+const horizontalPadding = moderateScale(16);
+const cardGap = moderateScale(10);
+const smallCardWidth = (width - horizontalPadding * 2 - cardGap) / 2;
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.surface,
+  },
+  appBar: {
+    height: Platform.OS === 'ios' ? moderateScale(84) : moderateScale(72),
+    paddingTop: Platform.OS === 'ios' ? moderateScale(20) : 0,
+    paddingHorizontal: horizontalPadding,
+    backgroundColor: colors.secondary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.14,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  avatar: {
+    marginRight: moderateScale(10),
+    backgroundColor: colors.secondaryDark,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.22)',
+  },
+  brandTitle: {
+    color: colors.white,
+    fontSize: moderateScale(24),
+    fontWeight: '700',
+  },
+  financialYear: {
+    marginTop: -2,
+    color: colors.greenSoft,
+    fontSize: moderateScale(11),
+    fontWeight: '600',
+    letterSpacing: 1.1,
+  },
+  iconButton: {
+    width: moderateScale(44),
+    height: moderateScale(44),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: horizontalPadding,
+    paddingTop: moderateScale(28),
+    paddingBottom: moderateScale(112),
+  },
+  hero: {
+    marginBottom: moderateScale(28),
+  },
+  pageTitle: {
+    color: colors.primary,
+    fontSize: moderateScale(25),
+    fontWeight: '700',
+  },
+  pageSubtitle: {
+    marginTop: moderateScale(6),
+    color: colors.text,
+    fontSize: moderateScale(16),
+  },
+  memberCard: {
+    minHeight: moderateScale(130),
+    padding: moderateScale(18),
+    borderRadius: moderateScale(13),
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    backgroundColor: colors.white,
+    overflow: 'hidden',
+    justifyContent: 'space-between',
+  },
+  statLabel: {
+    color: colors.text,
+    fontSize: moderateScale(13),
+    fontWeight: '500',
+    letterSpacing: 1.8,
+  },
+  memberCount: {
+    marginTop: moderateScale(8),
+    color: colors.primary,
+    fontSize: moderateScale(36),
+    fontWeight: '800',
+  },
+  memberGrowth: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  memberGrowthText: {
+    marginLeft: moderateScale(5),
+    color: colors.primary,
+    fontSize: moderateScale(13),
+    fontWeight: '700',
+  },
+  memberIcon: {
+    position: 'absolute',
+    right: -moderateScale(8),
+    bottom: -moderateScale(19),
+  },
+  statsRow: {
+    flexDirection: 'row',
+    columnGap: cardGap,
+    marginTop: moderateScale(10),
+  },
+  smallCard: {
+    width: smallCardWidth,
+    aspectRatio: 1,
+    padding: moderateScale(17),
+    borderRadius: moderateScale(12),
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    backgroundColor: colors.white,
+    justifyContent: 'space-between',
+  },
+  cardTitle: {
+    color: colors.text,
+    fontSize: moderateScale(14),
+    fontWeight: '500',
+  },
+  cardValue: {
+    color: colors.primary,
+    fontSize: moderateScale(24),
+    fontWeight: '500',
+  },
+  cardSubtitle: {
+    marginTop: moderateScale(4),
+    color: colors.text,
+    fontSize: moderateScale(13),
+  },
+  progressTrack: {
+    height: moderateScale(7),
+    borderRadius: 999,
+    backgroundColor: colors.surfaceVariant,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    width: '75%',
+    height: '100%',
+    backgroundColor: colors.secondary,
+  },
+  distributedCard: {
+    marginTop: moderateScale(12),
+    borderRadius: moderateScale(13),
+    backgroundColor: colors.secondary,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 9 },
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  distributedRow: {
+    minHeight: moderateScale(86),
+    paddingHorizontal: moderateScale(16),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  distributedContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  distributedIconBox: {
+    width: moderateScale(49),
+    height: moderateScale(49),
+    marginRight: moderateScale(16),
+    borderRadius: moderateScale(10),
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  distributedTitle: {
+    color: colors.white,
+    fontSize: moderateScale(18),
+    fontWeight: '600',
+  },
+  distributedValue: {
+    marginTop: moderateScale(4),
+    color: colors.white,
+    fontSize: moderateScale(19),
+    fontWeight: '500',
+  },
+  section: {
+    marginTop: moderateScale(32),
+  },
+  sectionTitle: {
+    color: colors.black,
+    fontSize: moderateScale(18),
+    fontWeight: '800',
+  },
+  actionGrid: {
+    marginTop: moderateScale(20),
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: moderateScale(9),
+  },
+  actionCard: {
+    width: (width - horizontalPadding * 2 - moderateScale(18)) / 3,
+    minHeight: moderateScale(115),
+    borderRadius: moderateScale(12),
+    backgroundColor: colors.surfaceContainerLow,
+  },
+  actionInner: {
+    flex: 1,
+    paddingVertical: moderateScale(16),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionIcon: {
+    width: moderateScale(52),
+    height: moderateScale(52),
+    borderRadius: moderateScale(26),
+    backgroundColor: colors.secondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: moderateScale(8),
+  },
+  actionText: {
+    color: colors.text,
+    fontSize: moderateScale(12),
+    lineHeight: moderateScale(17),
+    textAlign: 'center',
+    letterSpacing: 0.6,
+  },
+  logsHeader: {
+    marginTop: moderateScale(34),
+    marginBottom: moderateScale(20),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  viewAll: {
+    color: colors.primary,
+    fontSize: moderateScale(18),
+    fontWeight: '500',
+  },
+  logsList: {
+    rowGap: moderateScale(14),
+  },
+  logCard: {
+    minHeight: moderateScale(86),
+    padding: moderateScale(16),
+    borderRadius: moderateScale(12),
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    backgroundColor: colors.white,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  logBar: {
+    width: moderateScale(8),
+    height: moderateScale(56),
+    borderRadius: 999,
+    backgroundColor: colors.secondary,
+    marginRight: moderateScale(18),
+  },
+  logTextBlock: {
+    flex: 1,
+  },
+  logTitle: {
+    color: colors.black,
+    fontSize: moderateScale(17),
+    fontWeight: '800',
+  },
+  logSubtitle: {
+    marginTop: moderateScale(4),
+    color: colors.text,
+    fontSize: moderateScale(12),
+  },
+  logTime: {
+    color: colors.muted,
+    fontSize: moderateScale(12),
+    fontWeight: '500',
+    marginLeft: moderateScale(8),
+  },
+  fab: {
+    position: 'absolute',
+    right: moderateScale(16),
+    bottom: moderateScale(86),
+    width: moderateScale(64),
+    height: moderateScale(64),
+    borderRadius: moderateScale(18),
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.18,
+    shadowRadius: 16,
+    elevation: 9,
+  },
+  bottomBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    minHeight: moderateScale(70),
+    paddingHorizontal: horizontalPadding,
+    paddingTop: moderateScale(8),
+    paddingBottom: moderateScale(8),
+    borderTopLeftRadius: moderateScale(12),
+    borderTopRightRadius: moderateScale(12),
+    borderWidth: 1,
+    borderColor: colors.outlineVariant,
+    backgroundColor: colors.white,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  activeTab: {
+    minWidth: moderateScale(112),
+    minHeight: moderateScale(52),
+    borderRadius: moderateScale(28),
+    backgroundColor: colors.secondaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeTabText: {
+    color: colors.secondary,
+    fontSize: moderateScale(12),
+    fontWeight: '500',
+    letterSpacing: 0.4,
+  },
+  tabItem: {
+    minWidth: moderateScale(64),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabText: {
+    color: colors.text,
+    fontSize: moderateScale(12),
+    letterSpacing: 0.4,
+    marginTop: moderateScale(2),
+  },
+});
+
+export default styles;
