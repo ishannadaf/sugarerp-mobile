@@ -13,6 +13,11 @@ if database_url.startswith("mysql://"):
         "mysql+pymysql://",
         1,
     )
+    
+print("DATABASE DRIVER CHECK:", database_url.split("://")[0])
+print("PYMYSQL IMPORT CHECK:")
+import pymysql
+print("PyMySQL is installed")
 
 engine = create_engine(
     database_url,
