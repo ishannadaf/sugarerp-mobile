@@ -1,6 +1,5 @@
-
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -101,6 +100,10 @@ def create_member(
 def get_members(
     village_id: int | None = None,
     search: str | None = None,
+    # Keep these optional so existing Dashboard/Reports/Distribution
+    # callers without pagination retain their previous full-list behavior.
+    limit: int | None = Query(default=None, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
     db: Session = Depends(get_db),
     current_user: User = Depends(
         require_permission("MEMBER_VIEW")
@@ -108,18 +111,27 @@ def get_members(
 ):
     query = select(Member).where(Member.is_active.is_(True))
 
-    if village_id:
+    if village_id is not None:
         query = query.where(Member.village_id == village_id)
 
-    if search:
+    if search and search.strip():
         search_value = f"%{search.strip()}%"
         query = query.where(
-            Member.full_name.ilike(search_value)
-            | Member.member_code.ilike(search_value)
-            | Member.mobile_number.ilike(search_value)
+            or_(
+                Member.full_name.ilike(search_value),
+                Member.member_code.ilike(search_value),
+                Member.mobile_number.ilike(search_value),
+                Member.address.ilike(search_value),
+                Member.village.has(Village.name.ilike(search_value)),
+            )
         )
 
-    return db.scalars(query.order_by(Member.full_name)).all()
+    query = query.order_by(Member.full_name, Member.id)
+
+    if limit is not None:
+        query = query.limit(limit).offset(offset)
+
+    return db.scalars(query).all()
 
 
 @router.put("/{member_id}", response_model=MemberResponse)
