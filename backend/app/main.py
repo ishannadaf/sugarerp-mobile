@@ -10,7 +10,6 @@ from app.routers.payments import router as payments_router
 from app.routers.photos import router as photos_router
 from app.routers.dashboard import router as dashboard_router
 from app.routers import share_capital
-from app.routers import sugar_distribution_settings
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -27,7 +26,6 @@ app.include_router(payments_router)
 app.include_router(photos_router)
 app.include_router(dashboard_router)
 app.include_router(share_capital.router)
-app.include_router(sugar_distribution_settings.router)
 
 @app.get("/")
 def root():
