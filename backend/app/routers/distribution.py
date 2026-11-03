@@ -13,8 +13,6 @@ from app.schemas.distribution import (
     SugarDistributionCreate,
     SugarDistributionResponse,
 )
-from app.models.share_capital import MemberShareCapital
-from app.models.distribution_setting import SugarDistributionSetting
 
 DEFAULT_ROUTE_ID = 1
 
@@ -52,103 +50,6 @@ def validate_distribution_references(
         )
 
     return member
-
-
-
-def validate_sugar_distribution_eligibility(
-    db: Session,
-    member: Member,
-    bag_count: int,
-    bag_weight_kg: float,
-):
-    setting = db.scalar(
-        select(SugarDistributionSetting).where(
-            SugarDistributionSetting.id == 1
-        )
-    )
-
-    if not setting:
-        allow_10k = True
-        allow_15k = True
-    else:
-        allow_10k = setting.allow_10k
-        allow_15k = setting.allow_15k
-
-    if not allow_10k and not allow_15k:
-        raise HTTPException(
-            status_code=400,
-            detail="Sugar distribution is currently disabled by MASTER.",
-        )
-
-    payments = db.scalars(
-        select(MemberShareCapital)
-        .where(MemberShareCapital.member_id == member.id)
-        .order_by(MemberShareCapital.share_number)
-    ).all()
-
-    payment_by_share = {
-        payment.share_number: Decimal(str(payment.amount_paid))
-        for payment in payments
-    }
-
-    eligible_shares = 0
-
-    for share_number in range(1, member.shares + 1):
-        paid_amount = payment_by_share.get(
-            share_number,
-            Decimal("0"),
-        )
-
-        qualifies_10k = paid_amount >= Decimal("10000")
-        qualifies_15k = paid_amount >= Decimal("15000")
-
-        if (
-            (allow_10k and qualifies_10k)
-            or (allow_15k and qualifies_15k)
-        ):
-            eligible_shares += 1
-
-    eligible_kg = eligible_shares * 50
-
-    requested_kg = (
-        Decimal(str(bag_count))
-        * Decimal(str(bag_weight_kg))
-    )
-
-    if eligible_shares == 0:
-        if allow_15k and not allow_10k:
-            message = (
-                "This member is not eligible for sugar distribution. "
-                "Only members who completed ₹15,000 per share are allowed."
-            )
-        elif allow_10k and not allow_15k:
-            message = (
-                "This member is not eligible for sugar distribution. "
-                "Only members who completed ₹10,000 per share are allowed."
-            )
-        else:
-            message = (
-                "This member has no qualifying shares for sugar distribution. "
-                "A minimum contribution of ₹10,000 per share is required."
-            )
-
-        raise HTTPException(
-            status_code=400,
-            detail=message,
-        )
-
-    if requested_kg > eligible_kg:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                f"This member has {eligible_shares} qualifying share(s) "
-                f"and is eligible for only {eligible_kg} kg. "
-                f"Requested quantity is {requested_kg} kg."
-            ),
-        )
-
-    return eligible_shares, eligible_kg
-
 
 
 def calculate_distribution_amount(
@@ -257,12 +158,6 @@ def create_distribution(
     ),
 ):
     member = validate_distribution_references(db, data)
-    validate_sugar_distribution_eligibility(
-            db,
-            member,
-            data.bag_count,
-            data.bag_weight_kg,
-        )
     
     ensure_member_not_already_distributed(
         db,
@@ -402,12 +297,6 @@ def update_distribution(
         )
 
     member = validate_distribution_references(db, data)
-    validate_sugar_distribution_eligibility(
-        db,
-        member,
-        data.bag_count,
-        data.bag_weight_kg,
-    )
 
     rate, total_weight, total_amount, _ = (
         calculate_distribution_amount(
