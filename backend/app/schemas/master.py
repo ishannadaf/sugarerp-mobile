@@ -113,7 +113,7 @@ class MemberResponse(BaseModel):
     id: int
     member_code: str
     full_name: str
-    mobile_number: str | None
+    mobile_number: str | None = None
     village_id: int
     shares: int
     eligibility_kg: float
