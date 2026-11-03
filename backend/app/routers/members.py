@@ -16,29 +16,51 @@ router = APIRouter(
 
 
 def sync_member_shares(db: Session, member: Member, new_count: int):
+    """
+    Synchronize a member's share-capital records with Account Master.
+
+    Rules:
+    1. Create missing share records with zero payment.
+    2. Delete removed shares only when they have no payment.
+    3. Preserve removed shares that have payments.
+       They will not contribute to the current rate calculation
+       because calculate_member_tier uses member.shares.
+    """
+
+    if new_count < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Total shares cannot be negative.",
+        )
+
     existing = db.scalars(
         select(MemberShareCapital)
         .where(MemberShareCapital.member_id == member.id)
         .order_by(MemberShareCapital.share_number)
     ).all()
 
-    by_number = {row.share_number: row for row in existing}
+    by_number = {
+        row.share_number: row
+        for row in existing
+    }
 
-    # Do not remove share records that contain payments.
+    # Handle removed shares.
     for row in existing:
         if row.share_number > new_count:
-            if float(row.amount_paid) > 0:
-                raise HTTPException(
-                    status_code=400,
-                    detail=(
-                        f"Share {row.share_number} has a recorded payment. "
-                        "Its payment must be resolved before reducing shares."
-                    ),
-                )
-            db.delete(row)
 
-    # Create a zero-payment record for every new share.
+            if row.amount_paid is None or float(row.amount_paid) <= 0:
+                # Safe to delete an unused share record.
+                db.delete(row)
+
+            else:
+                # Preserve historical payment information.
+                # The share will not count in the current tier
+                # calculation because it is outside member.shares.
+                pass
+
+    # Create missing share records.
     for share_number in range(1, new_count + 1):
+
         if share_number not in by_number:
             db.add(
                 MemberShareCapital(
