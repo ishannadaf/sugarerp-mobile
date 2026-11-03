@@ -21,6 +21,7 @@ from app.models.share_capital import (
     MemberShareCapital,
     ShareCapitalRate,
 )
+from app.models.distribution_setting import SugarDistributionSetting
 
 __all__ = [
     "User",
