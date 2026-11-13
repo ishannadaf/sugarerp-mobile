@@ -231,10 +231,13 @@ def get_distributions(
 
     # Only MASTER can view all workers' distributions.
     # Every other user is restricted to their own records.
+    # Workers can view their own general history.
+    # Member-specific duplicate checks must search across all workers.
     if "MASTER" not in role_names:
-        query = query.where(
-            SugarDistribution.worker_id == current_user.id
-        )
+        if member_id is None:
+            query = query.where(
+                SugarDistribution.worker_id == current_user.id
+            )
     elif worker_id is not None:
         query = query.where(
             SugarDistribution.worker_id == worker_id
